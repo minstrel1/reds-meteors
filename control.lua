@@ -1,2 +1,4 @@
-event_handler = require("scripts/events.lua")
+debug_mode = true
+
+event_handler = require("lib/events.lua")
 
