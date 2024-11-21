@@ -23,19 +23,19 @@ end
 surfaces.on_configuration_changed = function ()
     surfaces.initialize_table()
 
-    for surface_name, v in pairs(global.meteor_surfaces) do
+    for surface_name, v in pairs(storage.meteor_surfaces) do
         surfaces.verify_table(surface_name)
     end
 
 end
 
 surfaces.initialize_table = function ()
-    global.meteor_surfaces = global.meteor_surfaces or {}
+    storage.meteor_surfaces = storage.meteor_surfaces or {}
 end
 
 surfaces.register_surface = function (surface_name, parameters)
     if game.surfaces[surface_name] and game.surfaces[surface_name].valid then
-        local surface_table = global.meteor_surfaces[surface_name] or {}
+        local surface_table = storage.meteor_surfaces[surface_name] or {}
         
         for parameter, value in pairs(surfaces.default) do
             if not surface_table[parameter] then --fill out default values if they aren't present
@@ -47,34 +47,54 @@ surfaces.register_surface = function (surface_name, parameters)
 
                 if parameter == "weights" then
                     local total = 0
-                    for _, v in pairs(surface_table[parameter]["total_weight"]) do
-                        total = total + v
+                    local cumulative_indices = {}
+                    for k, v in pairs(surface_table[parameter]) do
+                        if k ~= "total_weight" or k ~= "cumulative_indices" then
+                            for i=i, v do
+                            
+                            end
+                            total = total + v
+                            -- cumulative_indices 
+                        end
                     end
                     surface_table[parameter]["total_weight"] = total
                 end
             end
         end
 
-        global.meteor_surfaces[surface_name] = surface_table
+        storage.meteor_surfaces[surface_name] = surface_table
     end
 end
 
 surfaces.unregister_surface = function (surface_name)
-    if global.meteor_surfaces[surface_name] then
-        table.remove(global.meteor_surfaces, surface_name)
+    if storage.meteor_surfaces[surface_name] then
+        table.remove(storage.meteor_surfaces, surface_name)
     end
 end
 
 surfaces.get_surface_registration = function (surface_name)
-    return global.meteor_surfaces[surface_name]
+    return storage.meteor_surfaces[surface_name]
 end
 
 surfaces.set_surface_registration = function (surface_name, parameters)
-    global.meteor_surfaces[surface_name] = parameters
+    storage.meteor_surfaces[surface_name] = parameters
+end
+
+surfaces.calculate_weights = function (surface_name)
+    total = 0
+    for _, v in pairs(storage.meteor_surfaces[surface_name]["weights"]) do
+        total = total + v
+    end
+    storage.meteor_surfaces[surface_name]["total_weight"] = total
+end
+
+surfaces.add_meteor_type = function (surface_name, meteor_name, weight)
+    storage.meteor_surfaces[surface_name][meteor_name] = weight
+    surfaces.calculate_weights(surface_name)
 end
 
 surfaces.verify_registry = function (surface_name)
-    local current_table = global.meteor_surfaces[surface_name]
+    local current_table = storage.meteor_surfaces[surface_name]
     if current_table.version ~= surfaces.default.version then
         
     else
@@ -85,7 +105,19 @@ surfaces.verify_registry = function (surface_name)
         end
     end
 
-    global.meteor_surfaces[surface_name] = current_table
+    storage.meteor_surfaces[surface_name] = current_table
+end
+
+surfaces.get_meteor_pull = function (surface_name, amount)
+    result = {}
+    if not amount then
+        amount = 1
+    end
+
+    for i=1, amount do
+        
+        -- table.insert(result)
+    end
 end
 
 surfaces.on_tick = function (event)
