@@ -2,19 +2,32 @@ local surfaces = {}
 
 surfaces.name = "surfaces"
 
-surfaces.default = {}
-surfaces.default.weights = {}
-surfaces.default.min_spawn_ticks = 3600
-surfaces.default.max_spawn_ticks = 3600 * 4
-surfaces.default.next_spawn_tick = surfaces.default.min_spawn_ticks
-surfaces.default.min_amount = 1
-surfaces.default.min_pollution_multiplier = 1
-surfaces.default.max_amount = 10
-surfaces.default.max_pollution_multiplier = 1
-surfaces.default.do_pollution_scaling = false
-surfaces.default.pollution_scaling = "linear"
-surfaces.default.version = 1.0
-surfaces.default.double_chunk_map = {{0, 0}, {-1, 0}, {0, -1}, {-1, -1}}
+surfaces.default = {
+    weights = {meteor = 10, dingaling = 20},
+    min_spawn_ticks = 3600,
+    max_spawn_ticks = 3600 * 4,
+    next_spawn_tick = 3600,
+    min_amount = 1,
+    min_pollution_multiplier = 1,
+    max_amount = 10,
+    max_pollution_multiplier = 1,
+    do_pollution_scaling = false,
+    pollution_scaling = "linear",
+    version = 1.0,
+    double_chunk_map = {{0, 0}, {-1, 0}, {0, -1}, {-1, -1}}
+}
+-- surfaces.default.weights = {meteor = 10, dingaling = 20}
+-- surfaces.default.min_spawn_ticks = 3600
+-- surfaces.default.max_spawn_ticks = 3600 * 4
+-- surfaces.default.next_spawn_tick = surfaces.default.min_spawn_ticks
+-- surfaces.default.min_amount = 1
+-- surfaces.default.min_pollution_multiplier = 1
+-- surfaces.default.max_amount = 10
+-- surfaces.default.max_pollution_multiplier = 1
+-- surfaces.default.do_pollution_scaling = false
+-- surfaces.default.pollution_scaling = "linear"
+-- surfaces.default.version = 1.0
+-- surfaces.default.double_chunk_map = {{0, 0}, {-1, 0}, {0, -1}, {-1, -1}}
 
 surfaces.on_init = function ()
     surfaces.initialize_table()
@@ -33,32 +46,42 @@ surfaces.initialize_table = function ()
     storage.meteor_surfaces = storage.meteor_surfaces or {}
 end
 
-surfaces.register_surface = function (surface_name, parameters)
+surfaces.register_surface = function (surface_name, parameters, override)
     if game.surfaces[surface_name] and game.surfaces[surface_name].valid then
         local surface_table = storage.meteor_surfaces[surface_name] or {}
         
+        parameters = parameters or {}
+
         for parameter, value in pairs(surfaces.default) do
             if not surface_table[parameter] then --fill out default values if they aren't present
+                surface_table[parameter] = value
+            end
+            
+            if override then
+                --game.print("overriding parameter ".. parameter)
                 surface_table[parameter] = value
             end
 
             if parameters[parameter] then
                 surface_table[parameter] = parameters[parameter]
+            end
 
-                if parameter == "weights" then
-                    local total = 0
-                    local cumulative_indices = {}
-                    for k, v in pairs(surface_table[parameter]) do
-                        if k ~= "total_weight" or k ~= "cumulative_indices" then
-                            for i=i, v do
-                            
-                            end
-                            total = total + v
-                            -- cumulative_indices 
+            if parameter == "weights" then
+                local total = 0
+                local cumulative_indices = {}
+                for k, v in pairs(surface_table[parameter]) do
+                    if k ~= "total_weight" and k ~= "cumulative_indices" then
+                        for i=1, v do
+                            total = total + 1
+                            cumulative_indices[total] = k
                         end
+                        
+                        -- cumulative_indices 
                     end
-                    surface_table[parameter]["total_weight"] = total
                 end
+                --game.print("we got a total of ".. total)
+                surface_table[parameter]["total_weight"] = total
+                surface_table[parameter]["cumulative_indices"] = cumulative_indices
             end
         end
 
@@ -85,7 +108,20 @@ surfaces.calculate_weights = function (surface_name)
     for _, v in pairs(storage.meteor_surfaces[surface_name]["weights"]) do
         total = total + v
     end
-    storage.meteor_surfaces[surface_name]["total_weight"] = total
+    game.print(serpent.block(storage.meteor_surfaces[surface_name]["weights"]))
+    local total = 0
+    local cumulative_indices = {}
+    for k, v in pairs(storage.meteor_surfaces[surface_name]["weights"]) do
+        if k ~= "total_weight" or k ~= "cumulative_indices" then
+            for i=1, v do
+                total = total + 1
+                cumulative_indices[total] = k
+            end
+        end
+    end
+    game.print(total)
+    storage.meteor_surfaces[surface_name]["weights"]["total_weight"] = total
+    storage.meteor_surfaces[surface_name]["weights"]["cumulative_indices"] = cumulative_indices
 end
 
 surfaces.add_meteor_type = function (surface_name, meteor_name, weight)
@@ -115,14 +151,49 @@ surfaces.get_meteor_pull = function (surface_name, amount)
     end
 
     for i=1, amount do
-        
-        -- table.insert(result)
+        index = math.random(1, storage.meteor_surfaces[surface_name].weights["total_weight"])
+        table.insert(result, storage.meteor_surfaces[surface_name].weights.cumulative_indices[index])
     end
+
+    return result
+end
+
+surfaces.print_registered_surfaces = function ()
+    surfaces.initialize_table()
+
+    game.print("Registered surfaces:")
+    for k, _ in pairs(storage.meteor_surfaces) do
+        game.print(k)
+    end
+
 end
 
 surfaces.on_tick = function (event)
-    
+
 end
+
+commands.add_command("rm-print-registered-surfaces", "idek", function (command)
+    surfaces.print_registered_surfaces()
+end)
+
+commands.add_command("rm-recalculate-meteor-weights", "idek", function (command)
+    if command.parameter then
+        game.print("Recalculating weights for ".. command.parameter)
+        surfaces.calculate_weights(command.parameter)
+    else
+        game.print("Please include a surface name.")
+    end
+end)
+
+commands.add_command("rm-demo-meteor-pull", "idek", function (command)
+    local amount
+    if command.parameter then
+        amount = tonumber(command.parameter)
+    end
+    game.print("Grabbing pull of " .. amount .. " meteors.")
+    local result = surfaces.get_meteor_pull("nauvis", amount)
+    game.print(serpent.block(result))
+end)
 
 surfaces.events = {
     [defines.events.on_tick] = surfaces.on_tick,

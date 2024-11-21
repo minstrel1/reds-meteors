@@ -4,6 +4,7 @@ event_handler.virtual_events = {
     on_init = true,
     on_load = true,
     on_boner = true,
+    on_configuration_changed = true,
 }
 
 event_handler.real_events = {
