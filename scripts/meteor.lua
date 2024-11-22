@@ -3,10 +3,15 @@ local meteor = {}
 meteor.name = "meteor"
 
 meteor.default_meteors = {
-    {
+    meteor = {
         name = "meteor",
+        projectile = "meteor",
+        shadow = "meteor-shadow",
+        land_entity = "meteor-remnant"
     }
 }
+
+
 
 meteor.on_init = function ()
     meteor.intialize_table()
