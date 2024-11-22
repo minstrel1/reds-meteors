@@ -37,7 +37,7 @@ surfaces.on_configuration_changed = function ()
     surfaces.initialize_table()
 
     for surface_name, v in pairs(storage.meteor_surfaces) do
-        surfaces.verify_table(surface_name)
+        surfaces.verify_registry(surface_name)
     end
 
 end
