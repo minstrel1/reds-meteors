@@ -6,8 +6,7 @@
         },
         {
             "name": "System",
-            "factorioPath": "/Applications/factorio.app/Contents/MacOS/factorio",
-            "active": true
+            "factorioPath": "/Applications/factorio.app/Contents/MacOS/factorio"
         }
     ],
     "Lua.workspace.userThirdParty": [
