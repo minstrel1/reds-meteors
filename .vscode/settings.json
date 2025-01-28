@@ -3,10 +3,15 @@
         {
             "name": "steam",
             "factorioPath": "d:\\Steam\\steamapps\\common\\Factorio\\bin\\x64\\factorio.exe"
+        },
+        {
+            "name": "System",
+            "factorioPath": "/Applications/factorio.app/Contents/MacOS/factorio",
+            "active": true
         }
     ],
     "Lua.workspace.userThirdParty": [
-        "c:\\Users\\capta\\AppData\\Roaming\\VSCodium\\User\\workspaceStorage\\a780c216ad006d4d3a6ded48beb18e37\\justarandomgeek.factoriomod-debug\\sumneko-3rd"
+        "/Users/vance/Library/Application Support/VSCodium/User/workspaceStorage/cb216a011093a8194364d81bbef52ff4/justarandomgeek.factoriomod-debug/sumneko-3rd"
     ],
     "Lua.workspace.checkThirdParty": "ApplyInMemory"
 }

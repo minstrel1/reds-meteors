@@ -3,18 +3,18 @@ local surfaces = {}
 surfaces.name = "surfaces"
 
 surfaces.default = {
-    weights = {meteor = 10, dingaling = 20},
+    weights = {meteor = 10},
     min_spawn_ticks = 3600,
     max_spawn_ticks = 3600 * 4,
     next_spawn_tick = 3600,
     min_amount = 1,
-    min_pollution_multiplier = 1,
+    min_pollution_multiplier = 10,
     max_amount = 10,
-    max_pollution_multiplier = 1,
+    max_pollution_multiplier = 10,
     do_pollution_scaling = false,
     pollution_scaling = "linear",
     version = 1.0,
-    double_chunk_map = {{0, 0}, {-1, 0}, {0, -1}, {-1, -1}}
+    chunk_map = {{0, 0}, {-1, 0}, {0, -1}, {-1, -1}}
 }
 -- surfaces.default.weights = {meteor = 10, dingaling = 20}
 -- surfaces.default.min_spawn_ticks = 3600

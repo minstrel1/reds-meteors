@@ -9,7 +9,7 @@ data:extend{
         name = "rm-meteor-crater",
         type = "optimized-decorative",
         order = "a[nauvis]-b[decorative]",
-        collision_box = {{-0.5, -0.5}, {0.5, 0.5}},
+        collision_box = {{-1.5, -1.5}, {1.5, 1.5}},
         collision_mask = {layers={water_tile=true}, colliding_with_tiles_only=true},
         render_layer = "decals",
         tile_layer =  255,
@@ -19,7 +19,7 @@ data:extend{
                 width = 512,
                 height = 512,
                 variation_count = 1,
-                scale = 0.5,
+                scale = 0.75,
             }
         }
     },
@@ -33,7 +33,8 @@ data:extend{
         resistances = {
             {type = "fire", percent = 100},
             {type = "poison", percent = 100},
-            {type = "physical", percent = 75}
+            {type = "physical", percent = 75},
+            {type = "meteor-strike", percent = 90},
         },
         collision_box = {{-1, -1}, {1, 1}},
         collison_mask = {"item-layer", "object-layer", "player-layer", "water-tile", "train-layer"},
@@ -50,6 +51,7 @@ data:extend{
         },
         render_layer = "object",
         count_as_rock_for_filtered_deconstruction = true,
+        remove_decoratives = "true",
     },
     {
         type = "projectile",
@@ -68,7 +70,7 @@ data:extend{
         },
         rotatable = false,
         
-        acceleration = 0,
+        acceleration = 0.0,
 
         smoke = {
             {
@@ -155,15 +157,41 @@ data:extend{
                         entity_name = "rm-meteor-entity"
                     },
                     {
+                        type = "destroy-decoratives",
+                        radius = 2.5,
+                        probability = 1,
+                        include_decals = true,
+                    },
+                    {
                         type = "create-decorative",
                         decorative = "rm-meteor-crater",
                         spawn_max = 1,
                         spawn_min = 1,
-                        spawn_min_radius = 0.01,
-                        spawn_max_radius = 0.02
-                    }
+                        spawn_min_radius = 0.00001,
+                        spawn_max_radius = 0.00002
+                    },
                 }
             }
         }
-    }
+    },
+    {
+        type = "projectile",
+        name = "rm-meteor-shadow",
+
+        flags = { "not-on-map" },
+
+        animation = {
+            filename = "__reds-meteors__/graphics/meteor/meteor-shadow.png",
+            frame_count = 1,
+            width = 188,
+            height = 127,
+            line_length = 1,
+            scale = 0.8,
+            priority = "extra-high",
+            draw_as_shadow = true,
+        },
+        rotatable = false,
+        
+        acceleration = 0.0,
+    },
 }
