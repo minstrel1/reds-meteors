@@ -193,6 +193,10 @@ commands.add_command("rm-demo-meteor-pull", "idek", function (command)
     game.print("Grabbing pull of " .. amount .. " meteors.")
     local result = surfaces.get_meteor_pull("nauvis", amount)
     game.print(serpent.block(result))
+
+    for _, v in pairs(result) do
+        meteor.queue_meteor(game.surfaces["nauvis"], {math.random(-100, 100), math.random(-100, 100)}, v, game.tick + math.random(60 * 20))
+    end
 end)
 
 surfaces.events = {
